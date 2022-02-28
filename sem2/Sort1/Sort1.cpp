@@ -78,7 +78,7 @@ void sortFile(const char* fileName)
             fscanf_s(fileB, "%d", &x1);
             int k = 0;
             n=1-n;
-            while ((!feof(fileA)) && (!feof(fileB)))
+            do
             {
                 int i = 0, j = 0;
                 while ((!feof(fileA)) && (!feof(fileB)) && (i < p) && (j < p))
@@ -89,7 +89,8 @@ void sortFile(const char* fileName)
                             fprintf(fileC, " %d", x0);
                         else
                             fprintf(fileD, " %d", x0);
-                        fscanf_s(fileA, "%d", x0);
+                        if (!feof(fileA))
+                        fscanf_s(fileA, "%d", &x0);
                         i++;
                     }
                     else
@@ -98,81 +99,8 @@ void sortFile(const char* fileName)
                             fprintf(fileC, " %d", x1);
                         else
                             fprintf(fileD, " %d", x1);
-                        fscanf_s(fileB, "%d", x1);
-                        j++;
-                    }
-                }
-                while (!feof(fileA) && (i < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, "%d ", x0);
-                    else
-                        fprintf(fileD, "%d ", x0);
-                    fscanf_s(fileA, "%d", x0);
-                    i++;
-                }
-                while (!feof(fileB) && (j < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, " %d", x1);
-                    else
-                        fprintf(fileD, " %d", x1);
-                    fscanf_s(fileB, "%d", x1);
-                    j++;
-                }
-                n = n-1;
-            }
-            while (!feof(fileA))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x0);
-                else
-                    fprintf(fileD, " %d", x0);
-                fscanf_s(fileA, "%d", x0);
-            }
-            while (!feof(fileB))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x1);
-                else
-                    fprintf(fileD, " %d", x1);
-                fscanf_s(fileB, "%d", x1);
-            }
-        }
-        fclose(fileA);
-        fclose(fileB);
-        fclose(fileC);
-        fclose(fileD);
-        p = p * 2;
-        fopen_s(&fileC, filenameA, "wt");
-        fopen_s(&fileD, filenameB, "wt");
-        fopen_s(&fileA, filenameC, "rt");
-        fopen_s(&fileB, filenameD, "rt");
-        {
-            fscanf_s(fileA, "%d", &x0);
-            int k = 0;
-            n = 1 - n;
-            while ((!feof(fileA)) && (!feof(fileB)))
-            {
-                int i = 0, j = 0;
-                while ((!feof(fileA)) && (!feof(fileB)) && (i < p) && (j < p))
-                {
-                    if (x0 < x1)
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x0);
-                        else
-                            fprintf(fileD, " %d", x0);
-                        fscanf_s(fileA, "%d", x0);
-                        i++;
-                    }
-                    else
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x0);
-                        else
-                            fprintf(fileD, " %d", x0);
-                        fscanf_s(fileB, "%d", x1);
+                        if (!feof(fileB))
+                        fscanf_s(fileB, "%d", &x1);
                         j++;
                     }
                 }
@@ -182,7 +110,8 @@ void sortFile(const char* fileName)
                         fprintf(fileC, " %d", x0);
                     else
                         fprintf(fileD, " %d", x0);
-                    fscanf_s(fileA, "%d", x0);
+                    if (!feof(fileA))
+                    fscanf_s(fileA, "%d", &x0);
                     i++;
                 }
                 while (!feof(fileB) && (j < p))
@@ -191,18 +120,20 @@ void sortFile(const char* fileName)
                         fprintf(fileC, " %d", x1);
                     else
                         fprintf(fileD, " %d", x1);
-                    fscanf_s(fileB, "%d", x1);
+                    if (!feof(fileB))
+                    fscanf_s(fileB, "%d", &x1);
                     j++;
                 }
-                n = n - 1;
-            }
+                n = n-1;
+            } while ((!feof(fileA)) && (!feof(fileB)));
             while (!feof(fileA))
             {
                 if (n == 0)
                     fprintf(fileC, " %d", x0);
                 else
                     fprintf(fileD, " %d", x0);
-                fscanf_s(fileA, "%d", x0);
+                if (!feof(fileA))
+                fscanf_s(fileA, "%d", &x0);
             }
             while (!feof(fileB))
             {
@@ -210,7 +141,91 @@ void sortFile(const char* fileName)
                     fprintf(fileC, " %d", x1);
                 else
                     fprintf(fileD, " %d", x1);
-                fscanf_s(fileB, "%d", x1);
+                if (!feof(fileB))
+                fscanf_s(fileB, "%d", &x1);
+            }
+        }
+        fclose(fileA);
+        fclose(fileB);
+        fclose(fileC);
+        fclose(fileD);
+        p = p * 2;
+        //Так как алгоритм разбиения чисел по файлам одинаковый, целесообразно взять туже функцию, но в ссылках на файлы указать противоположные им имена
+        // т.е. файл С под именем A, а файл D под B
+        fopen_s(&fileC, filenameA, "wt");
+        fopen_s(&fileD, filenameB, "wt");
+        fopen_s(&fileA, filenameC, "rt");
+        fopen_s(&fileB, filenameD, "rt");
+        {
+            fscanf_s(fileA, "%d", &x0);
+            fscanf_s(fileB, "%d", &x1);
+            int k = 0;
+            n = 1 - n;
+            do
+            {
+                int i = 0, j = 0;
+                while ((!feof(fileA)) && (!feof(fileB)) && (i < p) && (j < p))
+                {
+                    if (x0 < x1)
+                    {
+                        if (n == 0)
+                            fprintf(fileC, " %d", x0);
+                        else
+                            fprintf(fileD, " %d", x0);
+                        if (!feof(fileA))
+                        fscanf_s(fileA, "%d", &x0);
+                        i++;
+                    }
+                    else
+                    {
+                        if (n == 0)
+                            fprintf(fileC, " %d", x0);
+                        else
+                            fprintf(fileD, " %d", x0);
+                        if (!feof(fileB))
+                        fscanf_s(fileB, "%d", &x1);
+                        j++;
+                    }
+                }
+                while (!feof(fileA) && (i < p))
+                {
+                    if (n == 0)
+                        fprintf(fileC, " %d", x0);
+                    else
+                        fprintf(fileD, " %d", x0);
+                    if (!feof(fileA))
+                    fscanf_s(fileA, "%d", &x0);
+                    i++;
+                }
+                while (!feof(fileB) && (j < p))
+                {
+                    if (n == 0)
+                        fprintf(fileC, " %d", x1);
+                    else
+                        fprintf(fileD, " %d", x1);
+                    if (!feof(fileB))
+                    fscanf_s(fileB, "%d", &x1);
+                    j++;
+                }
+                n = n - 1;
+            } while ((!feof(fileA)) && (!feof(fileB)));
+            while (!feof(fileA))
+            {
+                if (n == 0)
+                    fprintf(fileC, " %d", x0);
+                else
+                    fprintf(fileD, " %d", x0);
+                if (!feof(fileA))
+                fscanf_s(fileA, "%d", &x0);
+            }
+            while (!feof(fileB))
+            {
+                if (n == 0)
+                    fprintf(fileC, " %d", x1);
+                else
+                    fprintf(fileD, " %d", x1);
+                if (!feof(fileB))
+                fscanf_s(fileB, "%d", &x1);
             }
         }
         p = p * 2;
