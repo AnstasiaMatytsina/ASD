@@ -2,10 +2,32 @@
 #include <stdio.h>
 using namespace std;
 
+struct File
+{
+    FILE* file;
+    File(const char* fileName, const char* openMode)
+    {
+        fopen_s(&file, fileName, openMode);
+    }
+    ~File()
+    {
+        if (file != NULL)
+            fclose(file);
+    }
+    operator FILE* () const
+    {
+        return file;
+    }
+    void rediscoveryFile(const char *newname,const char *openMode)
+    {
+        fclose(file);
+        fopen_s(&file, newname, openMode);
+    }
+};
+
 bool fileNULL(const char* fileName)
 {
-    FILE* f1;
-    fopen_s(&f1, fileName, "rt");
+    File f1(fileName, "rt");
     if (feof(f1))
         return 0;
     return 1;
@@ -13,8 +35,7 @@ bool fileNULL(const char* fileName)
 
 bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, const int maxNumberValue)
 {
-    FILE *f1;
-    fopen_s(&f1,fileName, "wt");
+    File f1(fileName, "wt");
     if (f1 == NULL) {
         cout << "Ошибка при открытии файла";
         return 0;
@@ -30,8 +51,7 @@ bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, c
 
 bool isFileContainsSortedArray(const char* fileName)
 {
-    FILE* f1;
-    fopen_s(&f1, fileName, "rt");
+    File f1(fileName, "rt");
     int x,x2;
     fscanf_s(f1, "%d", &x);
     while (!feof(f1))
@@ -49,11 +69,12 @@ bool isFileContainsSortedArray(const char* fileName)
 
 void sortFile(const char* fileName)
 {
-    FILE *f1, *fileA, * fileB, * fileC, * fileD;
     const char* filenameA = "fa.txt", * filenameB = "fb.txt", * filenameC = "fc.txt", * filenameD = "fd.txt";
-    fopen_s(&f1, fileName, "rt");
-    fopen_s(&fileA, filenameA, "wt");
-    fopen_s(&fileB, filenameB, "wt");
+    File f1(fileName,"rt");
+    File fileA(filenameA, "wt");
+    File fileB(filenameB, "wt");
+    File fileC(filenameC, "wt");
+    File fileD(filenameD, "wt");
     int x0, x1;
     while (!feof(f1))
     {
@@ -69,10 +90,10 @@ void sortFile(const char* fileName)
     bool n = 1;
     while ((fileNULL(filenameB)))
     {
-        fopen_s(&fileA, filenameA, "rt");
-        fopen_s(&fileB, filenameB, "rt");
-        fopen_s(&fileC, filenameC, "wt");
-        fopen_s(&fileD, filenameD, "wt");
+        fileA.rediscoveryFile(filenameA, "rt");
+        fileB.rediscoveryFile(filenameB, "rt");
+        fileC.rediscoveryFile(filenameC, "wt");
+        fileD.rediscoveryFile(filenameD, "wt");
         {
             fscanf_s(fileA, "%d", &x0);
             fscanf_s(fileB, "%d", &x1);
@@ -152,10 +173,10 @@ void sortFile(const char* fileName)
         p = p * 2;
         //Так как алгоритм разбиения чисел по файлам одинаковый, целесообразно взять туже функцию, но в ссылках на файлы указать противоположные им имена
         // т.е. файл С под именем A, а файл D под B
-        fopen_s(&fileC, filenameA, "wt");
-        fopen_s(&fileD, filenameB, "wt");
-        fopen_s(&fileA, filenameC, "rt");
-        fopen_s(&fileB, filenameD, "rt");
+        fileC.rediscoveryFile(filenameA, "wt");
+        fileD.rediscoveryFile(filenameB, "wt");
+        fileA.rediscoveryFile(filenameC, "rt");
+        fileB.rediscoveryFile(filenameD, "rt");
         {
             fscanf_s(fileA, "%d", &x0);
             fscanf_s(fileB, "%d", &x1);
@@ -234,8 +255,8 @@ void sortFile(const char* fileName)
         fclose(fileC);
         fclose(fileD);
     }
-    fopen_s(&f1, fileName, "rt");
-    fopen_s(&fileA, filenameA, "wt");
+    f1.rediscoveryFile(fileName, "rt");
+    fileA.rediscoveryFile(filenameA, "wt");
     int x=0;
     while (!feof(fileA))
     {
