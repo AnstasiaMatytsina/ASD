@@ -28,9 +28,14 @@ struct File
 bool fileNULL(const char* fileName)
 {
     File f1(fileName, "rt");
+    int a, readRes;
     if (feof(f1))
-        return 0;
-    return 1;
+       return false;
+    readRes = fscanf_s(f1, "%d", &a);
+    if (readRes == EOF)
+        return false;
+    return true;
+
 }
 
 bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, const int maxNumberValue)
@@ -66,202 +71,127 @@ bool isFileContainsSortedArray(const char* fileName)
     fclose(f1);
     return 1;
 }
+void fragmintationFile(const char* fileName, const char* filenameA, const char* filenameB)
+{
+    File f1(fileName, "rt");
+    File fileA(filenameA, "wt");
+    File fileB(filenameB, "wt");
+    int x;
+    while (!feof(f1))
+    {
+        if (!feof(f1)) {
+            fscanf_s(f1, "%d", &x);
+            fprintf(fileA, "%d\n", x);
+        }
+        if (!feof(f1)) {
+            fscanf_s(f1, "%d", &x);
+            fprintf(fileB, "%d\n", x);
+        }
+    }
+}
+
+void integrationFile(const char* fileNameA, const char* fileNameB, const char* fileNameC, const char* fileNameD, int p)
+{
+    File fileA(fileNameA, "rt");
+    File fileB(fileNameB, "rt");
+    File fileC(fileNameC, "wt");
+    File fileD(fileNameD, "wt");
+    int x0, x1;
+    fscanf_s(fileA,"%d",&x0);
+    fscanf_s(fileB,"%d",&x1);
+    int k = 0;
+    bool n = 0;
+    while (!feof(fileA) && !feof(fileB))
+        {
+            int i = 0, j = 0;
+            while (!feof(fileA) && (!feof(fileB)) && (i < p) && (j < p))
+            {
+                            if (x0 < x1)
+                            {
+                                if (n == 0)
+                                    fprintf(fileC, "%d\n", x0);
+                                else
+                                    fprintf(fileD, "%d\n", x0);
+                                if(!feof(fileA))
+                                    fscanf_s(fileA, "%d", &x0);
+                                i++;
+                            }
+                            else
+                            {
+                                if (n == 0)
+                                    fprintf(fileC, "%d\n", x1);
+                                else
+                                    fprintf(fileD, "%d\n", x1);
+                                if(!feof(fileB))
+                                    fscanf_s(fileB, "%d", &x1);
+                                j++;
+                            }
+                n = 1 - n;
+            }
+            while (!feof(fileA))
+            {
+                    if (n == 0)
+                        fprintf(fileC, "%d\n", x0);
+                    else
+                        fprintf(fileD, "%d\n", x0);
+                    if (!feof(fileA))
+                    fscanf_s(fileA, "%d", &x0);
+                    i++;
+            }
+            while (!feof(fileB))
+            {
+                    if (n == 0)
+                        fprintf(fileC, "%d\n", x1);
+                    else
+                        fprintf(fileD, "%d\n", x1);
+                    if (!feof(fileB))
+                        fscanf_s(fileB, "%d", &x1);
+                    j++;
+        }
+    }
+}
 
 void sortFile(const char* fileName)
 {
-    const char* filenameA = "fa.txt", * filenameB = "fb.txt", * filenameC = "fc.txt", * filenameD = "fd.txt";
-    File f1(fileName,"rt");
-    File fileA(filenameA, "wt");
-    File fileB(filenameB, "wt");
-    File fileC(filenameC, "wt");
-    File fileD(filenameD, "wt");
-    int x0, x1;
-    while (!feof(f1))
+    const char* fileNameA = "fa.txt", * fileNameB = "fb.txt", * fileNameC = "fc.txt", * fileNameD = "fd.txt";
+    fragmintationFile(fileName, fileNameA, fileNameB);
+    int p = 1;
+    integrationFile(fileNameA, fileNameB, fileNameC, fileNameD, p);
+    p = p * 2;
+    while ((fileNULL(fileNameB) == 1 )|| (fileNULL(fileNameD) == 1))
     {
-        fscanf_s(f1, "%d", &x0);
-        fprintf(fileA, " %d", x0);
-        fscanf_s(f1, "%d", &x1);
-        fprintf(fileB, " %d", x1);
-    }
-    fclose(fileA);
-    fclose(fileB);
-    fclose(f1);
-    int p=1;
-    bool n = 1;
-    while ((fileNULL(filenameB)))
-    {
-        fileA.rediscoveryFile(filenameA, "rt");
-        fileB.rediscoveryFile(filenameB, "rt");
-        fileC.rediscoveryFile(filenameC, "wt");
-        fileD.rediscoveryFile(filenameD, "wt");
-        {
-            fscanf_s(fileA, "%d", &x0);
-            fscanf_s(fileB, "%d", &x1);
-            int k = 0;
-            n=1-n;
-            do
-            {
-                int i = 0, j = 0;
-                while ((!feof(fileA)) && (!feof(fileB)) && (i < p) && (j < p))
-                {
-                    if (x0 < x1)
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x0);
-                        else
-                            fprintf(fileD, " %d", x0);
-                        if (!feof(fileA))
-                        fscanf_s(fileA, "%d", &x0);
-                        i++;
-                    }
-                    else
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x1);
-                        else
-                            fprintf(fileD, " %d", x1);
-                        if (!feof(fileB))
-                        fscanf_s(fileB, "%d", &x1);
-                        j++;
-                    }
-                }
-                while (!feof(fileA) && (i < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, " %d", x0);
-                    else
-                        fprintf(fileD, " %d", x0);
-                    if (!feof(fileA))
-                    fscanf_s(fileA, "%d", &x0);
-                    i++;
-                }
-                while (!feof(fileB) && (j < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, " %d", x1);
-                    else
-                        fprintf(fileD, " %d", x1);
-                    if (!feof(fileB))
-                    fscanf_s(fileB, "%d", &x1);
-                    j++;
-                }
-                n = n-1;
-            } while ((!feof(fileA)) && (!feof(fileB)));
-            while (!feof(fileA))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x0);
-                else
-                    fprintf(fileD, " %d", x0);
-                if (!feof(fileA))
-                fscanf_s(fileA, "%d", &x0);
-            }
-            while (!feof(fileB))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x1);
-                else
-                    fprintf(fileD, " %d", x1);
-                if (!feof(fileB))
-                fscanf_s(fileB, "%d", &x1);
-            }
-        }
-        fclose(fileA);
-        fclose(fileB);
-        fclose(fileC);
-        fclose(fileD);
+        integrationFile(fileNameA, fileNameB, fileNameC, fileNameD, p);
         p = p * 2;
-        //Так как алгоритм разбиения чисел по файлам одинаковый, целесообразно взять туже функцию, но в ссылках на файлы указать противоположные им имена
-        // т.е. файл С под именем A, а файл D под B
-        fileC.rediscoveryFile(filenameA, "wt");
-        fileD.rediscoveryFile(filenameB, "wt");
-        fileA.rediscoveryFile(filenameC, "rt");
-        fileB.rediscoveryFile(filenameD, "rt");
+        if ((fileNULL(fileNameB) == 1) || (fileNULL(fileNameD) == 1))
         {
-            fscanf_s(fileA, "%d", &x0);
-            fscanf_s(fileB, "%d", &x1);
-            int k = 0;
-            n = 1 - n;
-            do
-            {
-                int i = 0, j = 0;
-                while ((!feof(fileA)) && (!feof(fileB)) && (i < p) && (j < p))
-                {
-                    if (x0 < x1)
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x0);
-                        else
-                            fprintf(fileD, " %d", x0);
-                        if (!feof(fileA))
-                        fscanf_s(fileA, "%d", &x0);
-                        i++;
-                    }
-                    else
-                    {
-                        if (n == 0)
-                            fprintf(fileC, " %d", x0);
-                        else
-                            fprintf(fileD, " %d", x0);
-                        if (!feof(fileB))
-                        fscanf_s(fileB, "%d", &x1);
-                        j++;
-                    }
-                }
-                while (!feof(fileA) && (i < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, " %d", x0);
-                    else
-                        fprintf(fileD, " %d", x0);
-                    if (!feof(fileA))
-                    fscanf_s(fileA, "%d", &x0);
-                    i++;
-                }
-                while (!feof(fileB) && (j < p))
-                {
-                    if (n == 0)
-                        fprintf(fileC, " %d", x1);
-                    else
-                        fprintf(fileD, " %d", x1);
-                    if (!feof(fileB))
-                    fscanf_s(fileB, "%d", &x1);
-                    j++;
-                }
-                n = n - 1;
-            } while ((!feof(fileA)) && (!feof(fileB)));
-            while (!feof(fileA))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x0);
-                else
-                    fprintf(fileD, " %d", x0);
-                if (!feof(fileA))
-                fscanf_s(fileA, "%d", &x0);
-            }
-            while (!feof(fileB))
-            {
-                if (n == 0)
-                    fprintf(fileC, " %d", x1);
-                else
-                    fprintf(fileD, " %d", x1);
-                if (!feof(fileB))
-                fscanf_s(fileB, "%d", &x1);
-            }
+            integrationFile(fileNameC, fileNameD, fileNameA, fileNameB, p);
+            p = p * 2;
         }
-        p = p * 2;
-        fclose(fileA);
-        fclose(fileB);
-        fclose(fileC);
-        fclose(fileD);
     }
-    f1.rediscoveryFile(fileName, "rt");
-    fileA.rediscoveryFile(filenameA, "wt");
-    int x=0;
-    while (!feof(fileA))
+    if ((fileNULL(fileNameB) == 1)) {
+        File fileA(fileNameA, "rt");
+        File f1(fileName, "wt");
+        int readRes = EOF + 1;
+        int x;
+        while (!feof(fileA) && readRes != EOF)
+        {
+            readRes = fscanf_s(fileA, "%d", &x);
+            if (readRes != EOF)
+                fprintf(f1, " %d\n", x);
+        }
+    }
+    else
     {
-        fscanf_s(fileA, "%d",x);
-        fprintf(f1, " %d", x);
+        File fileC(fileNameC, "rt");
+        File f1(fileName, "wt");
+        int readRes = EOF + 1;
+        int x;
+        while (!feof(fileC) && readRes != EOF)
+        {
+            readRes = fscanf_s(fileC, "%d", &x);
+            if (readRes != EOF)
+                fprintf(f1, " %d\n", x);
+        }
     }
 }
 
