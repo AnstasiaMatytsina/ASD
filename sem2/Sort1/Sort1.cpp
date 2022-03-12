@@ -2,7 +2,7 @@
 #include <stdio.h>
 using namespace std;
 
-struct File
+struct File //Вспомогательная структура, так как возникли проблемы с переоткрытием файлов
 {
     FILE* file;
     File(const char* fileName, const char* openMode)
@@ -25,7 +25,7 @@ struct File
     }
 };
 
-bool fileNULL(const char* fileName)
+bool fileNULL(const char* fileName)// Проверка на файла на пустоту
 {
     File f1(fileName, "rt");
     int a, readRes;
@@ -38,7 +38,7 @@ bool fileNULL(const char* fileName)
 
 }
 
-bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, const int maxNumberValue)
+bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, const int maxNumberValue)//Запись в файл случайных чисел, с передаваемым количеством
 {
     File f1(fileName, "wt");
     if (f1 == NULL) {
@@ -54,7 +54,7 @@ bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, c
     return 1;
 }
 
-bool isFileContainsSortedArray(const char* fileName)
+bool isFileContainsSortedArray(const char* fileName)//Проверка файла на упорядоченность (отсортированность)
 {
     File f1(fileName, "rt");
     int x,x2;
@@ -71,12 +71,13 @@ bool isFileContainsSortedArray(const char* fileName)
     fclose(f1);
     return 1;
 }
-void fragmintationFile(const char* fileName, const char* filenameA, const char* filenameB)
+void fragmintationFile(const char* fileName, const char* filenameA, const char* filenameB)//Функция первичного разбиения
 {
     File f1(fileName, "rt");
     File fileA(filenameA, "wt");
     File fileB(filenameB, "wt");
     int x;
+    //Делим массив в файле пополам (в случае не делимости на 2, больше на 1 число будет в файле A)
     while (!feof(f1))
     {
         if (!feof(f1)) {
@@ -90,8 +91,23 @@ void fragmintationFile(const char* fileName, const char* filenameA, const char* 
     }
 }
 
+int countNumberInFile(const char* fileName)//Функция нахождения количества чисел в файле B
+{
+    File file(fileName, "rt");
+    int x;
+    int i = 0;
+    while (!feof(file))
+    {
+        fscanf_s(file, "%d", &x);//Возмоно стоило сделать не считывание, а сдвиг по файлу, но так мы точно будет ходить только по числам
+        i++;
+    }
+    return i - 1;
+}
+
 void integrationFile(const char* fileNameA, const char* fileNameB, const char* fileNameC, const char* fileNameD, int p)
 {
+    int len_A = countNumberInFile(fileNameA);//Находит количество чисел в файле A
+    int len_B = countNumberInFile(fileNameB);//Находит количество чисел в файле B
     File fileA(fileNameA, "rt");
     File fileB(fileNameB, "rt");
     File fileC(fileNameC, "wt");
@@ -99,65 +115,81 @@ void integrationFile(const char* fileNameA, const char* fileNameB, const char* f
     int x0, x1;
     fscanf_s(fileA,"%d",&x0);
     fscanf_s(fileB,"%d",&x1);
-    int k = 0;
     bool n = 0;
-    while (!feof(fileA) && !feof(fileB))
-        {
-            int i = 0, j = 0;
-            while (!feof(fileA) && (!feof(fileB)) && (i < p) && (j < p))
-            {
-                            if (x0 < x1)
-                            {
-                                if (n == 0)
-                                    fprintf(fileC, "%d\n", x0);
-                                else
-                                    fprintf(fileD, "%d\n", x0);
-                                if(!feof(fileA))
-                                    fscanf_s(fileA, "%d", &x0);
-                                i++;
-                            }
-                            else
-                            {
-                                if (n == 0)
-                                    fprintf(fileC, "%d\n", x1);
-                                else
-                                    fprintf(fileD, "%d\n", x1);
-                                if(!feof(fileB))
-                                    fscanf_s(fileB, "%d", &x1);
-                                j++;
-                            }
-                n = 1 - n;
+    int k = 0, m = 0;
+    int i, j;
+    while (k < len_A && m < len_B) {
+        i = j = 0;
+        while (k < len_A && m < len_B && i < p && j < p) { // Разбиваем массив пока в одном в одном из файлом не достигнем конца
+            if (x0 < x1) {
+                if (!n)
+                    fprintf(fileC, "%d\n", x0);
+                else
+                    fprintf(fileD, "%d\n", x0);
+                fscanf_s(fileA, "%d", &x0);
+                i++;
+                k++;
             }
-            while (!feof(fileA))
-            {
-                    if (n == 0)
-                        fprintf(fileC, "%d\n", x0);
-                    else
-                        fprintf(fileD, "%d\n", x0);
-                    if (!feof(fileA))
-                    fscanf_s(fileA, "%d", &x0);
-                    i++;
+            else {
+                if (!n)
+                    fprintf(fileC, "%d\n", x1);
+                else
+                    fprintf(fileD, "%d\n", x1);
+                fscanf_s(fileB, "%d", &x1);
+                j++;
+                m++;
             }
-            while (!feof(fileB))
-            {
-                    if (n == 0)
-                        fprintf(fileC, "%d\n", x1);
-                    else
-                        fprintf(fileD, "%d\n", x1);
-                    if (!feof(fileB))
-                        fscanf_s(fileB, "%d", &x1);
-                    j++;
         }
+        //Дальше смотрим оба файла, в зависимости от того, который НЕкончился, продолжаем запись 
+        while (k < len_A && i < p) {
+            if (!n)
+                fprintf(fileC, "%d\n", x0);
+            else
+                fprintf(fileD, "%d\n", x0);
+            fscanf_s(fileA, "%d", &x0);
+            i++;
+            k++;
+        }
+        while (m < len_B && j < p) {
+            if (!n)
+                fprintf(fileC, "%d\n", x1);
+            else
+                fprintf(fileD, "%d\n", x1);
+            fscanf_s(fileB, "%d", &x1);
+            j++;
+            m++;
+        }
+        n = 1 - n;
     }
+    //Так как мы работаем с файлами, считывание и запись идут в различном порядке, 
+    //поэтому сравниваем исходное количество и текущее (счетчики k и m) и записываем при необходимости
+    while (k < len_A) {
+        if (!n)
+            fprintf(fileC, "%d\n", x0);
+        else
+            fprintf(fileD, "%d\n", x0);
+        fscanf_s(fileA, "%d", &x0);
+        k++;
+    }
+    while (m < len_B) {
+        if (!n)
+            fprintf(fileC, "%d\n", x1);
+        else
+            fprintf(fileD, "%d\n", x1);
+        fscanf_s(fileB, "%d", &x1);
+        m++;
+    }
+    fclose(fileA);
+    fclose(fileB);
+    fclose(fileC);
+    fclose(fileD);
 }
 
-void sortFile(const char* fileName)
+void sortFile(const char* fileName) // Функция сортировки из самого задания (почти ничего не меняла)
 {
     const char* fileNameA = "fa.txt", * fileNameB = "fb.txt", * fileNameC = "fc.txt", * fileNameD = "fd.txt";
     fragmintationFile(fileName, fileNameA, fileNameB);
     int p = 1;
-    integrationFile(fileNameA, fileNameB, fileNameC, fileNameD, p);
-    p = p * 2;
     while ((fileNULL(fileNameB) == 1 )|| (fileNULL(fileNameD) == 1))
     {
         integrationFile(fileNameA, fileNameB, fileNameC, fileNameD, p);
@@ -195,7 +227,7 @@ void sortFile(const char* fileName)
     }
 }
 
-int createAndSortFile(const char* fileName, const int numbersCount, const int maxNumberValue)
+int createAndSortFile(const char* fileName, const int numbersCount, const int maxNumberValue) // Создание и сортировка файла (ничего не меняла)
 {
     if (!createFileWithRandomNumbers(fileName, numbersCount, maxNumberValue)) {
         return -1;
@@ -210,8 +242,8 @@ int createAndSortFile(const char* fileName, const int numbersCount, const int ma
 int main()
 {
     const char* fileName = "file.txt";
-    const int numbersCount = 10;
-    const int maxNumberValue = 10;
+    const int numbersCount = 30;
+    const int maxNumberValue = 30;
     createFileWithRandomNumbers(fileName,numbersCount,maxNumberValue);
     for (int i = 0; i < 1; i++) {
         switch (createAndSortFile(fileName, numbersCount, maxNumberValue)) {
