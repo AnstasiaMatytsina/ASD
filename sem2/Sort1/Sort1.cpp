@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 #include <stdio.h>
+#include <random>
+#include <ctime>
 using namespace std;
 
 struct File //Вспомогательная структура, так как возникли проблемы с переоткрытием файлов
@@ -18,7 +20,7 @@ struct File //Вспомогательная структура, так как �
     {
         return file;
     }
-    void rediscoveryFile(const char *newname,const char *openMode)
+    void rediscoveryFile(const char* newname, const char* openMode)
     {
         fclose(file);
         fopen_s(&file, newname, openMode);
@@ -40,15 +42,15 @@ bool fileNULL(const char* fileName)// Проверка на файла на пу
 
 bool createFileWithRandomNumbers(const char *fileName, const int numbersCount, const int maxNumberValue)//Запись в файл случайных чисел, с передаваемым количеством
 {
+    std::mt19937 gen(time(0));
     File f1(fileName, "wt");
     if (f1 == NULL) {
-        cout << "Ошибка при открытии файла";
         return 0;
     }
     for (int i = 0; i < numbersCount; i++)
     {
-        int x = rand() % maxNumberValue;
-        fprintf(f1, " %d", x);
+        int x = gen() % maxNumberValue;
+        fprintf(f1, "%d\n", x);
     }
     fclose(f1);
     return 1;
@@ -209,7 +211,7 @@ void sortFile(const char* fileName) // Функция сортировки из 
         {
             readRes = fscanf_s(fileA, "%d", &x);
             if (readRes != EOF)
-                fprintf(f1, " %d\n", x);
+                fprintf(f1, "%d\n", x);
         }
     }
     else
@@ -222,7 +224,7 @@ void sortFile(const char* fileName) // Функция сортировки из 
         {
             readRes = fscanf_s(fileC, "%d", &x);
             if (readRes != EOF)
-                fprintf(f1, " %d\n", x);
+                fprintf(f1, "%d\n", x);
         }
     }
 }
@@ -242,8 +244,8 @@ int createAndSortFile(const char* fileName, const int numbersCount, const int ma
 int main()
 {
     const char* fileName = "file.txt";
-    const int numbersCount = 30;
-    const int maxNumberValue = 30;
+    const int numbersCount = 1000;
+    const int maxNumberValue = 1000000;
     createFileWithRandomNumbers(fileName,numbersCount,maxNumberValue);
     for (int i = 0; i < 1; i++) {
         switch (createAndSortFile(fileName, numbersCount, maxNumberValue)) {
