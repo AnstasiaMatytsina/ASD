@@ -9,7 +9,7 @@ private:
 	Node* left, * right;
 public:
 	friend class BinaryTree;
-	Node(int k = 0, Node* L = NULL, Node* R = NULL);// конструктор по умолчанию
+	Node(int k = 0, Node* L = NULL, Node* R = NULL);// конструктор по умолчанию int k=0,Node* L=NULL, Node *R=NUUL
 	int Key() 
 	{ 
 		return key; 
@@ -89,7 +89,7 @@ public:
 			if (temp->right) levels(temp->right, i - 1); //рекурсией уходим вправо и уменьшаем число уровней, которое осталось пройти до нужного
 		}
 	}
-	BinaryTree& operator= (BinaryTree& temp)
+	BinaryTree& operator= (BinaryTree& temp)//оператор присвоени€
 	{
 		if (this == &temp) return *this;
 		else
@@ -176,7 +176,7 @@ public:
 		delete s;//очищаем пам€ть
 		return temp;
 	}
-	Node* Root() //¬озвращение корн€
+	Node* rootFind() //¬озвращение корн€
 	{
 		return root;
 	}
@@ -203,22 +203,25 @@ private:
 		}
 		return *this;//возвращение конечного дерева
 	}
-	BinaryTree add_node(int k)//добавлени€ узла в дерево
+	/*¬от здесь есть проблема, не понимаю почему, но на данные функции жалуетс€ компил€тор (внешний неразрешенный символ)
+	* я все функции делала либо через дружественность либо через вспомогательные функции  
+	*/
+	BinaryTree add_node(int x)//добавлени€ узла в дерево
 	{
-		root = add_node(root, k);//возвращает корень с изменЄнной информацией о потомках и т.д.
+		root = add_node(root, x);//возвращает корень с изменЄнной информацией о потомках и т.д.
 		return *this;//возвращает конечное дерево
 	}
-	Node* add_node(Node* temp, int k)//ф-ци€ добавлени€ узла в дерево
+	Node* add_node(Node* temp, int x)//ф-ци€ добавлени€ узла в дерево
 	{
 		if (temp == NULL) //≈сли узел пуст, то добавл€ем наш узел в это место
 		{
-			Node* temp = new Node(k);//создаЄм узел, использу€ конструктор по умолчанию(к-значение ключа нашего узла)
+			Node* temp = new Node(x);//создаЄм узел, использу€ конструктор по умолчанию(к-значение ключа нашего узла)
 			return temp;//возвращаем узел
 		}
-		if (k <= temp->key)
-			temp->left = add_node(temp->left, k);//≈сли значение добавл€емого узла меньше либо равно текущему, рекурсивно уходим в левое поддерево
+		if (x <= temp->key)
+			temp->left = add_node(temp->left, x);//≈сли значение добавл€емого узла меньше либо равно текущему, рекурсивно уходим в левое поддерево
 		else
-			temp->right = add_node(temp->right, k);//»наче если значение добавл€емого узла больше текущего, рекурсивно уходим в правое поддерево
+			temp->right = add_node(temp->right, x);//»наче если значение добавл€емого узла больше текущего, рекурсивно уходим в правое поддерево
 		return temp;//возвращаем узел
 	}
 	void copy(Node* temp, Node*& root)
@@ -242,8 +245,13 @@ private:
 		temp = NULL;
 	}
 };
-void main()
+int main()
 {
 	setlocale(LC_ALL, "Russian");
-	
+	int n = 10;
+	int mas[10] = { 5,3,8,4,7,45,6,23,8,9 };
+	BinaryTree BT(mas,n);
+	Node* root = BT.rootFind();
+	BT.printTree(0,root);
+	return 0;
 }
