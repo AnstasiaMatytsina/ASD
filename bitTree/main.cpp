@@ -1,5 +1,6 @@
 #include <iostream>
 #include <assert.h>
+
 using namespace std;
 
 class Node // Класс узел
@@ -9,8 +10,25 @@ private:
 	Node* left, * right;
 public:
 	friend class BinaryTree;
-	Node(int k = 0, Node* L = NULL, Node* R = NULL);// конструктор по умолчанию int k=0,Node* L=NULL, Node *R=NUUL
-	int Key() 
+	Node()// конструктор по умолчанию
+	{
+		key = 0;
+		left = NULL;
+		right = NULL;
+	}
+	Node(int k)// конструктор по умолчанию c key (для корня дерева),key - ключ узла(ветки)
+	{
+		key = k;
+		left = NULL;
+		right = NULL;
+	}
+	Node(int k, Node* l, Node* r)// конструктор с аргументами, где key - ключ узла (ветки), l - указатель на левую ветку, r - на правую
+	{
+		key = k;
+		left = l;
+		right = r;
+	}
+	int Key() //возвращение ключа
 	{ 
 		return key; 
 	}
@@ -180,7 +198,7 @@ public:
 	{
 		return root;
 	}
-	void printTree(int l, Node* temp)
+	void printTree(int l, Node* temp)// Вывод дерева в консоль
 	{
 		if (temp == NULL) return;
 		printTree(l + 3, temp->right);
@@ -203,9 +221,6 @@ private:
 		}
 		return *this;//возвращение конечного дерева
 	}
-	/*Вот здесь есть проблема, не понимаю почему, но на данные функции жалуется компилятор (внешний неразрешенный символ)
-	* Я все функции делала либо через дружественность либо через вспомогательные функции  
-	*/
 	BinaryTree add_node(int x)//добавления узла в дерево
 	{
 		root = add_node(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
