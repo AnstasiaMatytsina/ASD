@@ -1,5 +1,6 @@
 #include <iostream>
 #include <assert.h>
+#include <vector>
 
 using namespace std;
 
@@ -27,6 +28,12 @@ public:
 		key = k;
 		left = l;
 		right = r;
+	}
+	bool emptyNode(Node * temp)
+	{
+		if (key == 0 && left == NULL && right == NULL)
+			return 1;
+		return 0;
 	}
 	int Key() //возвращение ключа
 	{ 
@@ -72,21 +79,21 @@ public:
 	{
 		clear(root);
 	}
-	int Height() //ф-ция вычисления высоты дерева
+	int height() //ф-ция вычисления высоты дерева
 	{
-		return Height_node(root);
+		return heightNode(root);
 	}
-	int Height_node(Node* temp) //ф-ция вычисления высоты узла
+	int heightNode(Node* temp) //ф-ция вычисления высоты узла
 	{
 		if (temp == NULL) return 0; //у пустых деревьев и узлов соответствующая высота
-		int h_l = Height_node(temp->left); //в высоту левого поддерева заносим рекурсией значение высоты левого потомка
-		int h_r = Height_node(temp->right); //в высоту правого поддерева заносим рекурсией значение высоты правого потомка
+		int h_l = heightNode(temp->left); //в высоту левого поддерева заносим рекурсией значение высоты левого потомка
+		int h_r = heightNode(temp->right); //в высоту правого поддерева заносим рекурсией значение высоты правого потомка
 		if (h_l > h_r) return h_l + 1; //Если высота левого потомка больше правого, то высота корня данного поддерева соответственно на 1 больше
 		return h_r + 1; //Иначе высота корня данного поддерева больше высоты правого поддерева на 1
 	}
 	void levels() //Передаём высоту дерева в качестве параметра в ф-цию обхода по уровням
 	{
-		int u = Height();
+		int u = height();
 		for (int i = 0; i < u; i++) //по циклу обходим дерево u раз
 		{
 			levels(root, i);//передаём какой уровень нужно вывести
@@ -117,45 +124,45 @@ public:
 			return *this;
 		}
 	}
-	Node* find_node(int k)//ф-ция нахождения узла
+	Node* findNode(int k)//ф-ция нахождения узла
 	{
-		Node* p = find_node(root, k);//возвращаем нужный узел, либо NULL
+		Node* p = findNode(root, k);//возвращаем нужный узел, либо NULL
 		return p;//возвращаем узел
 	}
-	Node* find_node(Node* temp, int k)//ф-ция нахождения узла
+	Node* findNode(Node* temp, int k)//ф-ция нахождения узла
 	{
 		if (temp == NULL) 
 			return temp;//если узел пуст, возвращаемся 
 		if (k == temp->key) 
 			return temp;//если искомое значение совпадает с ключём текущего узла, мы нашли его, возвращаем его
 		if (k < temp->key) 
-			temp = find_node(temp->left, k);//Если искомое значение меньше ключа текущего узла, идём в левое поддерево
+			temp = findNode(temp->left, k);//Если искомое значение меньше ключа текущего узла, идём в левое поддерево
 		else 
 			if (k > temp->key) 
-				temp = find_node(temp->right, k);//Иначе в правое поддерево
+				temp = findNode(temp->right, k);//Иначе в правое поддерево
 		return temp;//возвращаем результат поисков
 	}
-	BinaryTree del_node(int k)//ф-ция удаления узла
+	bool delNode(int k)//ф-ция удаления узла
 	{
-		Node* temp = find_node(k), * r = root;//Ищем узел в дереве 
-		if (temp == NULL) return *this;//Если мы не находим его, значит удалять нечего, возвращаем текущее дерево
-		if (temp == root)//если удаляемый узел это корень, удаляем корень и на его месть возвращаем результат ф-ции удаления узла из дерева
+		Node* temp = findNode(k), * r = root;//Ищем узел в дереве 
+		if (temp == NULL) return 0;
+		if (temp == root)
 		{
-			root = del_node(temp);
-			return *this;//возвращаем новое дерево
+			root = delNode(temp);
+			return 1;
 		}
 		while ((r->left != temp) && (r->right != temp))//пока мы не найдём путь от корня до удаляемого узла:
 		{
 			if (r->key > temp->key)r = r->left;//Если значение текущего узла больше нужного узла, двигаемся влево
 			else r = r->right; //Иначе вправо
 		}
-		if (r->left == temp) r->left = del_node(temp);//Если левый потомок текущего узла = нужному, в левого потомка возвращаем результат удаления узла q
-		else r->right = del_node(temp);//иначе, в правого потомка
-		return *this;//возвращаем новое дерево
+		if (r->left == temp) r->left = delNode(temp);//Если левый потомок текущего узла = нужному, в левого потомка возвращаем результат удаления узла q
+		else r->right = delNode(temp);//иначе, в правого потомка
+		return 1;
 	}
-	Node* del_node(Node* temp)//удаление узла из дерева
+	Node* delNode(Node* temp)//удаление узла из дерева
 	{
-		Node* s, * r;//s будет потомком текущего узла, r-предком
+		Node* s, * r=temp;//s будет потомком текущего узла, r-предком
 		if (temp->left == NULL && temp->right == NULL)//Если у удаляемого узла нет потомков, просто опустошаем его
 		{
 			delete temp;
@@ -207,7 +214,39 @@ public:
 		cout << temp->key << "\n";
 		printTree(l + 3, temp->left);
 	}
-
+	int count()//Возвращает количество узлов
+	{
+		return countNode(root);
+	}
+	int countNode(Node* temp)//Основная функция возвращения узлов
+	{
+		if (temp == NULL) //Если ветка не идет дальше, ничего не передаем
+			return 0;
+		int c_l = heightNode(temp->left);//подсчет левой части
+		int c_r = heightNode(temp->right);//подсчет правой части
+		return c_l + c_r;//Вывод количества справа и слева
+	}
+	int inVector(vector<int> v) //передаём пустой вектор размера n и возвращаем число узлов в дерева
+	{
+		int k = 0; //обнуляем счётчик
+		inVector_auxiliary(root, v, k); //вызываем основную функцию заполнения упорядоченного вектора
+		return k; //возвращаем число элементов в векторе
+	}
+	void inVector_auxiliary(Node* p, vector<int> v, int& k)// заполняем вектор
+	{
+		if (p == NULL) 
+			return;//если узел пуст, добавлять нечего, возвращаемся
+		inVector_auxiliary(p->left, v, k);//рекурсивно уходим влево, пока не дойдём до конца
+		v.at(k) = p->key;//заносим в вектор значение ключа
+		k++; //увеличиваем счётчик элементов
+		inVector_auxiliary(p->right, v, k);//рекурсивно уходим вправо и продолжаем
+	}
+	bool isEmpty()//Возвращает true, если дерево пустое
+	{
+		if (root->key == 0 && root->left == NULL && root->right == NULL)
+			return 1;
+		return 0;
+	}
 	//Вспомогательные функции для узлов и дерева (используются только внутри класса)
 private:
 	BinaryTree create(int n)//ф-ция создания дерева
@@ -268,5 +307,21 @@ int main()
 	BinaryTree BT(mas,n);
 	Node* root = BT.rootFind();
 	BT.printTree(0,root);
+	cout << endl;
+	cout << "Дерево пустое: ";
+	if (BT.isEmpty())
+		cout << "true";
+	else
+		cout << "false";
+	cout << endl<< "Высота дерева: ";
+	int x = BT.height();
+	cout << x << endl;
+	cout << "Удалим узел с ключом 3, удален: ";
+	if (BT.delNode(3))
+		cout << "true";
+	else
+		cout << "false";
+	cout << endl;
+	BT.printTree(0, root);
 	return 0;
 }
