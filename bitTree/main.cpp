@@ -54,7 +54,12 @@ class BinaryTree //Класс бинарное дерево
 private:
 	Node* root; //указатель на корень
 public:
-	BinaryTree(Node *temp)//Конструктор поумолчанию
+	BinaryTree()
+	{
+		Node* temp;
+		root = temp;
+	}
+	BinaryTree(Node *temp)
 	{
 		if (temp)
 		{
@@ -216,14 +221,14 @@ public:
 	}
 	int count()//Возвращает количество узлов
 	{
-		return countNode(root);
+		return countNode(root)-1;
 	}
 	int countNode(Node* temp)//Основная функция возвращения узлов
 	{
-		if (temp == NULL) //Если ветка не идет дальше, ничего не передаем
-			return 0;
-		int c_l = heightNode(temp->left);//подсчет левой части
-		int c_r = heightNode(temp->right);//подсчет правой части
+		if (temp == NULL) //Если ветка не идет дальше, преедаем 1
+			return 1;
+		int c_l = countNode(temp->left);//подсчет левой части
+		int c_r = countNode(temp->right);//подсчет правой части
 		return c_l + c_r;//Вывод количества справа и слева
 	}
 	int inVector(vector<int> v) //передаём пустой вектор размера n и возвращаем число узлов в дерева
@@ -248,7 +253,6 @@ public:
 		return 0;
 	}
 	//Вспомогательные функции для узлов и дерева (используются только внутри класса)
-private:
 	BinaryTree create(int n)//ф-ция создания дерева
 	{
 		int k;//вводимые с клавиатуры значения ключей
@@ -302,8 +306,8 @@ private:
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	int n = 10;
-	int mas[10] = { 5,3,8,4,7,45,6,23,8,9 };
+	int n = 13;
+	int mas[13] = { 5,3,8,4,7,45,6,23,8,9,5,2,20 };
 	BinaryTree BT(mas,n);
 	Node* root = BT.rootFind();
 	BT.printTree(0,root);
@@ -323,5 +327,7 @@ int main()
 		cout << "false";
 	cout << endl;
 	BT.printTree(0, root);
+	cout<< endl;
+	cout<< "Количество узлов: "<< BT.count();
 	return 0;
 }
