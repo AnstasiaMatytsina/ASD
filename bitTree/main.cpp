@@ -221,15 +221,15 @@ public:
 	}
 	int count()//Возвращает количество узлов
 	{
-		return countNode(root)-1;
+		return countNode(root);
 	}
 	int countNode(Node* temp)//Основная функция возвращения узлов
 	{
 		if (temp == NULL) //Если ветка не идет дальше, преедаем 1
-			return 1;
+			return 0;
 		int c_l = countNode(temp->left);//подсчет левой части
 		int c_r = countNode(temp->right);//подсчет правой части
-		return c_l + c_r;//Вывод количества справа и слева
+		return c_l + c_r+1;//Вывод количества справа и слева
 	}
 	int inVector(vector<int> v) //передаём пустой вектор размера n и возвращаем число узлов в дерева
 	{
