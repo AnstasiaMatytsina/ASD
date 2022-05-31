@@ -252,13 +252,13 @@ public:
 			return 1;
 		return 0;
 	}
-	int minKey() {
+	int minKey() { //Идем к максимально левой ветке
 		Node* temp = root;
 		while (temp->left != NULL)
 			temp = temp->left;
 		return temp->key;
 	}
-	int maxKey() {
+	int maxKey() { //Идем к максимально правой ветке
 		Node* temp = root;
 		while (temp->right != NULL)
 			temp = temp->right;
