@@ -73,7 +73,7 @@ public:
 		root = NULL;
 		for (int i = 0; i < n; i++)
 		{
-			root = add_node(root, a[i]);
+			root = addNode(root, a[i]);
 		}
 	}
 	BinaryTree(BinaryTree& temp)
@@ -234,17 +234,17 @@ public:
 	int inVector(vector<int> v) //передаём пустой вектор размера n и возвращаем число узлов в дерева
 	{
 		int k = 0; //обнуляем счётчик
-		inVector_auxiliary(root, v, k); //вызываем основную функцию заполнения упорядоченного вектора
+		inVectorAuxiliary(root, v, k); //вызываем основную функцию заполнения упорядоченного вектора
 		return k; //возвращаем число элементов в векторе
 	}
-	void inVector_auxiliary(Node* p, vector<int> v, int& k)// заполняем вектор
+	void inVectorAuxiliary(Node* p, vector<int> v, int& k)// заполняем вектор
 	{
 		if (p == NULL)
 			return;//если узел пуст, добавлять нечего, возвращаемся
-		inVector_auxiliary(p->left, v, k);//рекурсивно уходим влево, пока не дойдём до конца
+		inVectorAuxiliary(p->left, v, k);//рекурсивно уходим влево, пока не дойдём до конца
 		v.at(k) = p->key;//заносим в вектор значение ключа
 		k++; //увеличиваем счётчик элементов
-		inVector_auxiliary(p->right, v, k);//рекурсивно уходим вправо и продолжаем
+		inVectorAuxiliary(p->right, v, k);//рекурсивно уходим вправо и продолжаем
 	}
 	bool isEmpty()//Возвращает true, если дерево пустое
 	{
@@ -252,7 +252,18 @@ public:
 			return 1;
 		return 0;
 	}
-	//Вспомогательные функции для узлов и дерева (используются только внутри класса)
+	int minKey() {
+		Node* temp = root;
+		while (temp->left != NULL)
+			temp = temp->left;
+		return temp->key;
+	}
+	int maxKey() {
+		Node* temp = root;
+		while (temp->right != NULL)
+			temp = temp->right;
+		return temp->key;
+	}
 	BinaryTree create(int n)//ф-ция создания дерева
 	{
 		int k;//вводимые с клавиатуры значения ключей
@@ -260,26 +271,26 @@ public:
 		for (int i = 0; i < n; i++)
 		{
 			cin >> k;
-			root = add_node(root, k);//добавление узлов в дерево
+			root = addNode(root, k);//добавление узлов в дерево
 		}
 		return *this;//возвращение конечного дерева
 	}
-	BinaryTree add_node(int x)//добавления узла в дерево
+	BinaryTree addNode(int x)//добавления узла в дерево
 	{
-		root = add_node(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
+		root = addNode(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
 		return *this;//возвращает конечное дерево
 	}
-	Node* add_node(Node* temp, int x)//ф-ция добавления узла в дерево
+	Node* addNode(Node* temp, int x)//ф-ция добавления узла в дерево
 	{
 		if (temp == NULL) //Если узел пуст, то добавляем наш узел в это место
 		{
 			Node* temp = new Node(x);//создаём узел, используя конструктор по умолчанию(к-значение ключа нашего узла)
 			return temp;//возвращаем узел
 		}
-		if (x <= temp->key)
-			temp->left = add_node(temp->left, x);//Если значение добавляемого узла меньше либо равно текущему, рекурсивно уходим в левое поддерево
+		if (x < temp->key)
+			temp->left = addNode(temp->left, x);//Если значение добавляемого узла меньше , рекурсивно уходим в левое поддерево
 		else
-			temp->right = add_node(temp->right, x);//Иначе если значение добавляемого узла больше текущего, рекурсивно уходим в правое поддерево
+			temp->right = addNode(temp->right, x);//Иначе если значение добавляемого узла больше либо равно текущему, рекурсивно уходим в правое поддерево
 		return temp;//возвращаем узел
 	}
 	void copy(Node* temp, Node*& root)
@@ -307,7 +318,7 @@ int main()
 {
 	setlocale(LC_ALL, "Russian");
 	int n = 13;
-	int mas[13] = { 5,3,8,4,7,45,6,23,8,9,5,2,20 };
+	int mas[13] = { 19,3,18,4,7,45,6,23,8,9,5,2,20 };
 	BinaryTree BT(mas, n);
 	Node* root = BT.rootFind();
 	BT.printTree(0, root);
@@ -327,7 +338,14 @@ int main()
 		cout << "false";
 	cout << endl;
 	BT.printTree(0, root);
+	cout << "Введите число, которое стоит добавить в дерево: ";
+	int temp;
+	cin >> temp;
+	BT.addNode(temp);
+	BT.printTree(0, root);
 	cout << endl;
-	cout << "Количество узлов: " << BT.count();
+	cout << "Количество узлов: " << BT.count() << endl;
+	cout << "Максимальный ключ: " << BT.maxKey() << endl;
+	cout << "Минимальный ключ: " << BT.minKey() << endl;
 	return 0;
 }
