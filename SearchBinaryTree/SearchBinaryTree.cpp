@@ -6,11 +6,12 @@ using namespace std;
 
 class Node // Класс узел
 {
-private:
+protected:
 	int key;
 	Node* left, * right;
 public:
 	friend class BinaryTree;
+	friend class SearchBinaryTree;
 	Node()// конструктор по умолчанию
 	{
 		key = 0;
@@ -51,7 +52,7 @@ public:
 
 class BinaryTree //Класс бинарное дерево
 {
-private:
+protected:
 	Node* root; //указатель на корень
 public:
 	BinaryTree()
@@ -73,7 +74,7 @@ public:
 		root = NULL;
 		for (int i = 0; i < n; i++)
 		{
-			root = addNode(root, a[i]);
+			root = add_node(root, a[i]);
 		}
 	}
 	BinaryTree(BinaryTree& temp)
@@ -221,30 +222,30 @@ public:
 	}
 	int count()//Возвращает количество узлов
 	{
-		return countNode(root) - 1;
+		return countNode(root);
 	}
 	int countNode(Node* temp)//Основная функция возвращения узлов
 	{
 		if (temp == NULL) //Если ветка не идет дальше, преедаем 1
-			return 1;
+			return 0;
 		int c_l = countNode(temp->left);//подсчет левой части
 		int c_r = countNode(temp->right);//подсчет правой части
-		return c_l + c_r;//Вывод количества справа и слева
+		return c_l + c_r + 1;//Вывод количества справа и слева
 	}
 	int inVector(vector<int> v) //передаём пустой вектор размера n и возвращаем число узлов в дерева
 	{
 		int k = 0; //обнуляем счётчик
-		inVectorAuxiliary(root, v, k); //вызываем основную функцию заполнения упорядоченного вектора
+		inVector_auxiliary(root, v, k); //вызываем основную функцию заполнения упорядоченного вектора
 		return k; //возвращаем число элементов в векторе
 	}
-	void inVectorAuxiliary(Node* p, vector<int> v, int& k)// заполняем вектор
+	void inVector_auxiliary(Node* p, vector<int> v, int& k)// заполняем вектор
 	{
 		if (p == NULL)
 			return;//если узел пуст, добавлять нечего, возвращаемся
-		inVectorAuxiliary(p->left, v, k);//рекурсивно уходим влево, пока не дойдём до конца
+		inVector_auxiliary(p->left, v, k);//рекурсивно уходим влево, пока не дойдём до конца
 		v.at(k) = p->key;//заносим в вектор значение ключа
 		k++; //увеличиваем счётчик элементов
-		inVectorAuxiliary(p->right, v, k);//рекурсивно уходим вправо и продолжаем
+		inVector_auxiliary(p->right, v, k);//рекурсивно уходим вправо и продолжаем
 	}
 	bool isEmpty()//Возвращает true, если дерево пустое
 	{
@@ -252,18 +253,7 @@ public:
 			return 1;
 		return 0;
 	}
-	int minKey() { //Идем к максимально левой ветке
-		Node* temp = root;
-		while (temp->left != NULL)
-			temp = temp->left;
-		return temp->key;
-	}
-	int maxKey() { //Идем к максимально правой ветке
-		Node* temp = root;
-		while (temp->right != NULL)
-			temp = temp->right;
-		return temp->key;
-	}
+	//Вспомогательные функции для узлов и дерева (используются только внутри класса)
 	BinaryTree create(int n)//ф-ция создания дерева
 	{
 		int k;//вводимые с клавиатуры значения ключей
@@ -271,26 +261,26 @@ public:
 		for (int i = 0; i < n; i++)
 		{
 			cin >> k;
-			root = addNode(root, k);//добавление узлов в дерево
+			root = add_node(root, k);//добавление узлов в дерево
 		}
 		return *this;//возвращение конечного дерева
 	}
-	BinaryTree addNode(int x)//добавления узла в дерево
+	BinaryTree add_node(int x)//добавления узла в дерево
 	{
-		root = addNode(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
+		root = add_node(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
 		return *this;//возвращает конечное дерево
 	}
-	Node* addNode(Node* temp, int x)//ф-ция добавления узла в дерево
+	Node* add_node(Node* temp, int x)//ф-ция добавления узла в дерево
 	{
 		if (temp == NULL) //Если узел пуст, то добавляем наш узел в это место
 		{
 			Node* temp = new Node(x);//создаём узел, используя конструктор по умолчанию(к-значение ключа нашего узла)
 			return temp;//возвращаем узел
 		}
-		if (x < temp->key)
-			temp->left = addNode(temp->left, x);//Если значение добавляемого узла меньше , рекурсивно уходим в левое поддерево
+		if (x <= temp->key)
+			temp->left = add_node(temp->left, x);//Если значение добавляемого узла меньше либо равно текущему, рекурсивно уходим в левое поддерево
 		else
-			temp->right = addNode(temp->right, x);//Иначе если значение добавляемого узла больше либо равно текущему, рекурсивно уходим в правое поддерево
+			temp->right = add_node(temp->right, x);//Иначе если значение добавляемого узла больше текущего, рекурсивно уходим в правое поддерево
 		return temp;//возвращаем узел
 	}
 	void copy(Node* temp, Node*& root)
@@ -314,12 +304,62 @@ public:
 		temp = NULL;
 	}
 };
+
+class SearchBinaryTree : public BinaryTree{
+	public:
+		//Так как изначальное двоичное дерево было написанно с конструктором и добавлением новых узлов по алгоритму двоичного дерева поиска 
+		//Просто наследуем их конструкторы
+		SearchBinaryTree() : BinaryTree() {}
+		SearchBinaryTree(Node * temp) : BinaryTree(temp) {}
+		SearchBinaryTree(int* mas, int n) : BinaryTree(mas, n){}
+	int minKey() { //Идем к максимально левой ветке
+		Node* temp = root;
+		while (temp->left != NULL)
+			temp = temp->left;
+		return temp->key;
+	}
+	int maxKey() { //Идем к максимально правой ветке
+		Node* temp = root;
+		while (temp->right != NULL)
+			temp = temp->right;
+		return temp->key;
+	}
+	SearchBinaryTree create(int n)//ф-ция создания дерева
+	{
+		int k;//вводимые с клавиатуры значения ключей
+		cout << "Введите элементы" << endl;
+		for (int i = 0; i < n; i++)
+		{
+			cin >> k;
+			root = addNode(root, k);//добавление узлов в дерево
+		}
+		return *this;//возвращение конечного дерева
+	}
+	SearchBinaryTree addNode(int x)//добавления узла в дерево
+	{
+		root = addNode(root, x);//возвращает корень с изменённой информацией о потомках и т.д.
+		return *this;//возвращает конечное дерево
+	}
+	Node* addNode(Node* temp, int x)//ф-ция добавления узла в дерево
+	{
+		if (temp == NULL) //Если узел пуст, то добавляем наш узел в это место
+		{
+			Node* temp = new Node(x);//создаём узел, используя конструктор по умолчанию(к-значение ключа нашего узла)
+			return temp;//возвращаем узел
+		}
+		if (x < temp->key)
+			temp->left = addNode(temp->left, x);//Если значение добавляемого узла меньше , рекурсивно уходим в левое поддерево
+		else
+			temp->right = addNode(temp->right, x);//Иначе если значение добавляемого узла больше либо равно текущему, рекурсивно уходим в правое поддерево
+		return temp;//возвращаем узел
+	}
+};
 int main()
 {
 	setlocale(LC_ALL, "Russian");
 	int n = 13;
 	int mas[13] = { 19,3,18,4,7,45,6,23,8,9,5,2,20 };
-	BinaryTree BT(mas, n);
+	SearchBinaryTree BT(mas, n);
 	Node* root = BT.rootFind();
 	BT.printTree(0, root);
 	cout << endl;
