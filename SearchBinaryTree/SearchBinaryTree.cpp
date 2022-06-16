@@ -57,7 +57,7 @@ protected:
 public:
 	BinaryTree()
 	{
-		Node* temp;
+		Node* temp = new Node;
 		root = temp;
 	}
 	BinaryTree(Node* temp)
@@ -249,7 +249,7 @@ public:
 	}
 	bool isEmpty()//Возвращает true, если дерево пустое
 	{
-		if (root->key == 0 && root->left == NULL && root->right == NULL)
+		if (root == NULL)
 			return 1;
 		return 0;
 	}
@@ -313,16 +313,20 @@ class SearchBinaryTree : public BinaryTree{
 		SearchBinaryTree(Node * temp) : BinaryTree(temp) {}
 		SearchBinaryTree(int* mas, int n) : BinaryTree(mas, n){}
 	int minKey() { //Идем к максимально левой ветке
-		Node* temp = root;
-		while (temp->left != NULL)
-			temp = temp->left;
-		return temp->key;
+		if (root != NULL) {
+			Node* temp = root;
+			while (temp->left != NULL)
+				temp = temp->left;
+			return temp->key;
+		}
 	}
 	int maxKey() { //Идем к максимально правой ветке
-		Node* temp = root;
-		while (temp->right != NULL)
-			temp = temp->right;
-		return temp->key;
+		if (root != NULL) {
+			Node* temp = root;
+			while (temp->right != NULL)
+				temp = temp->right;
+			return temp->key;
+		}
 	}
 	SearchBinaryTree create(int n)//ф-ция создания дерева
 	{
@@ -357,8 +361,8 @@ class SearchBinaryTree : public BinaryTree{
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	int n = 13;
-	int mas[13] = { 19,3,18,4,7,45,6,23,8,9,5,2,20 };
+	int n = 6;
+	int mas[] = {6,5,4,3,4,5};
 	SearchBinaryTree BT(mas, n);
 	Node* root = BT.rootFind();
 	BT.printTree(0, root);
@@ -371,11 +375,7 @@ int main()
 	cout << endl << "Высота дерева: ";
 	int x = BT.height();
 	cout << x << endl;
-	cout << "Удалим узел с ключом 3, удален: ";
-	if (BT.delNode(3))
-		cout << "true";
-	else
-		cout << "false";
+	cout << "Удалим узел с ключом 3, удален:" << BT.delNode(3) << endl;
 	cout << endl;
 	BT.printTree(0, root);
 	cout << "Введите число, которое стоит добавить в дерево: ";
@@ -387,5 +387,19 @@ int main()
 	cout << "Количество узлов: " << BT.count() << endl;
 	cout << "Максимальный ключ: " << BT.maxKey() << endl;
 	cout << "Минимальный ключ: " << BT.minKey() << endl;
+	SearchBinaryTree BT2;
+	cout << "Дерево пустое: ";
+	if (BT2.isEmpty())
+		cout << "true" << endl;
+	else
+		cout << "false" << endl;
+	n = 0;
+	int mas1[] = { NULL };
+	cout << "Дерево пустое: ";
+	SearchBinaryTree BT3(mas1,n);
+	if (BT3.isEmpty())
+		cout << "true";
+	else
+		cout << "false";
 	return 0;
 }
