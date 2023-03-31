@@ -305,13 +305,13 @@ public:
 	}
 };
 
-class SearchBinaryTree : public BinaryTree{
-	public:
-		//Так как изначальное двоичное дерево было написанно с конструктором и добавлением новых узлов по алгоритму двоичного дерева поиска 
-		//Просто наследуем их конструкторы
-		SearchBinaryTree() : BinaryTree() {}
-		SearchBinaryTree(Node * temp) : BinaryTree(temp) {}
-		SearchBinaryTree(int* mas, int n) : BinaryTree(mas, n){}
+class SearchBinaryTree : public BinaryTree {
+public:
+	//Так как изначальное двоичное дерево было написанно с конструктором и добавлением новых узлов по алгоритму двоичного дерева поиска 
+	//Просто наследуем их конструкторы
+	SearchBinaryTree() : BinaryTree() {}
+	SearchBinaryTree(Node* temp) : BinaryTree(temp) {}
+	SearchBinaryTree(int* mas, int n) : BinaryTree(mas, n) {}
 	int minKey() { //Идем к максимально левой ветке
 		if (root != NULL) {
 			Node* temp = root;
@@ -358,9 +358,113 @@ class SearchBinaryTree : public BinaryTree{
 		return temp;//возвращаем узел
 	}
 };
+
+void testSearchTree(int size)
+{
+	int failedCase = 0;
+	SearchBinaryTree searchTree;
+	vector<int> nodesKeys;
+
+
+	for (int i = 0; i < size; ++i) {
+		searchTree.addNode(i);
+		nodesKeys.push_back(i);
+	}
+
+
+	int index, key;
+
+
+	while (nodesKeys.size()) {
+		// Поставила константу 3 как индекс удаления, так как 
+		index = 3;
+		nodesKeys.erase(nodesKeys.begin() + index);
+		if (!searchTree.delNode(index)) {
+			failedCase = 1;
+			break;
+		}
+
+
+		if (nodesKeys.size()) {
+			// Поставила константу 4 как индекс удаления, так как 
+			index = 4;
+			key = nodesKeys[index];
+			nodesKeys.erase(nodesKeys.begin() + index);
+			if (!searchTree.delNode(key)) {
+				failedCase = 3;
+				break;
+			}
+		}
+	}
+
+
+	if (failedCase || !searchTree.isEmpty()) {
+		if (!failedCase) {
+			failedCase = -1;
+		}
+
+		//std::cout << size << " " << searchTree.count() << std::endl;
+		//std::cout << std::endl;
+		//std::cout << std::endl;
+	}
+	cout << failedCase;
+}
+
+void testSearchTreeAsBinaryTree(int size)
+{
+	int failedCase = 0;
+	SearchBinaryTree searchTree;
+	BinaryTree& searchTreeRef = searchTree;
+	std::vector<int> nodesKeys;
+
+
+	for (int i = 0; i < size; ++i) {
+		searchTreeRef.add_node(i);
+		nodesKeys.push_back(i);
+	}
+
+	int index, key;
+
+	while (nodesKeys.size()) {
+		// Поставила константу 3 как индекс удаления, так как 
+		index = 3;
+		nodesKeys.erase(nodesKeys.begin() + index);
+		if (!searchTreeRef.delNode(index)) {
+			failedCase = 1;
+			break;
+		}
+
+		if (nodesKeys.size()) {
+			// Поставила константу 4 как индекс удаления, так как 
+			index = 4;
+			key = nodesKeys[index];
+			nodesKeys.erase(nodesKeys.begin() + index);
+			if (!searchTreeRef.delNode(key)) {
+				failedCase = 3;
+				break;
+			}
+		}
+	}
+
+
+	if (failedCase || !searchTreeRef.isEmpty()) {
+		if (!failedCase) {
+			failedCase = -1;
+		}
+
+
+		//std::cout << size << " " << searchTreeRef.count() << std::endl;
+		//std::cout << std::endl;
+		//std::cout << std::endl;
+	}
+	cout << failedCase;
+}
+
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
+	/*
 	int n = 6;
 	int mas[] = {6,5,4,3,4,5};
 	SearchBinaryTree BT(mas, n);
@@ -401,5 +505,8 @@ int main()
 		cout << "true";
 	else
 		cout << "false";
+	*/
+	testSearchTree(10);
+	testSearchTreeAsBinaryTree(10);
 	return 0;
 }
